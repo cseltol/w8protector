@@ -15,4 +15,4 @@
 
 Copyright © 2023 Ivan Zverev [cseltol](https://github.com/cseltol)
 
-This project has [MIT License](https://github.com/cseltol/w8protector/LICENSE).
+This project has [MIT License](https://github.com/cseltol/w8protector/blob/main/LICENSE).
