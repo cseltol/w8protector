@@ -12,7 +12,7 @@ func (u *User) ValidateUser() error {
 	return validation.ValidateStruct(
 		u,
 		validation.Field(&u.Email, validation.Required, is.Email),
-		validation.Field(&u.Password, validation.By(valid.RequiredIf(u.EncryptedPassword == "")), validation.Length(5, 64)),
+		validation.Field(&u.Password, validation.By(valid.RequiredIf(u.EncryptedPassword == "")), validation.Length(6, 32)),
 	)
 }
 
