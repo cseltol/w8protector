@@ -6,6 +6,8 @@ type User struct {
 	Id                int64     `bson:"id"`
 	Username          string    `bson:"username"`
 	Email             string    `bson:"email"`
+	Password          string    `bson:"password,omitempty"`
+	EncryptedPassword string    `bson:"-"`
 	RegistrationDate  time.Time `bson:"registrationDate"`
 	SubExpirationDate time.Time `bson:"subExpirationDate"`
 	IsSubscribed      bool      `bson:"isSubscribed"`
