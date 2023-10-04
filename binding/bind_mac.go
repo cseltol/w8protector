@@ -3,11 +3,15 @@ package binding
 import (
 	"errors"
 	"log"
+	"os"
 	"os/exec"
+	"os/user"
 	"strings"
 )
 
-func BindMac() (string, error) {
+type BindMac struct{}
+
+func (b *BindMac) ReadDriveNumber() (string, error) {
 	cmd := exec.Command("system_profiler", "SPHardwareDataType")
 	output, err := cmd.Output()
 	if err != nil {
@@ -28,4 +32,22 @@ func BindMac() (string, error) {
 	}
 
 	return "", errors.New("Serial number HDD not found")
+}
+
+func (b *BindMac) ReadUserName() (string, error) {
+	user, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+
+	return user.Name, nil
+}
+
+func (b *BindMac) ReadMachineName() (string, error) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		return "", err
+	}
+
+	return hostname, nil
 }

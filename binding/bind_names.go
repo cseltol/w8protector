@@ -5,7 +5,7 @@ import (
 	"os/user"
 )
 
-func GetUserName() (string, error) {
+func ReadUsername() (string, error) {
 	user, err := user.Current()
 	if err != nil {
 		return "", err
@@ -14,7 +14,7 @@ func GetUserName() (string, error) {
 	return user.Name, nil
 }
 
-func GetHostName() (string, error) {
+func BindMachineName() (string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
 		return "", err

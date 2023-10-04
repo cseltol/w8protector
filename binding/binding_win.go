@@ -4,9 +4,13 @@ import (
 	"errors"
 	"os/exec"
 	"strings"
+	"os"
+	"os/user"
 )
 
-func BindWin() (string, error) {
+type BindWin struct{}
+
+func (b *BindWin) ReadDriveNumber() (string, error) {
 	cmd := exec.Command("wmic", "diskdrive", "get", "serialnumber")
 	output, err := cmd.Output()
 	if err != nil {
@@ -23,4 +27,22 @@ func BindWin() (string, error) {
 	}
 
 	return "", errors.New("Serial number HDD not found")
+}
+
+func (b *BindWin) ReadUserName() (string, error) {
+	user, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+
+	return user.Name, nil
+}
+
+func (b *BindWin) ReadMachineName() (string, error) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		return "", err
+	}
+
+	return hostname, nil
 }

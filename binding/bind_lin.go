@@ -5,9 +5,13 @@ import (
 	"log"
 	"os/exec"
 	"strings"
+	"os"
+	"os/user"
 )
 
-func BindLin() (string, error) {
+type BinLin struct {}
+
+func (b *BinLin) ReadDriveNumber() (string, error) {
 	path, errPath := pathFinding()
 	if errPath != nil {
 		log.Println("Error reading path in bind:", errPath)
@@ -51,4 +55,23 @@ func pathFinding() (string, error) {
 	}
 
 	return "", errors.New("Path has not been found")
+}
+
+
+func (b *BinLin) ReadUserName() (string, error) {
+	user, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+
+	return user.Name, nil
+}
+
+func (b *BinLin) ReadMachineName() (string, error) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		return "", err
+	}
+
+	return hostname, nil
 }
