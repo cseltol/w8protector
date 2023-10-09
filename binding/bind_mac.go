@@ -2,21 +2,23 @@ package binding
 
 import (
 	"errors"
-	"log"
 	"os"
 	"os/exec"
 	"os/user"
 	"strings"
 )
 
-type BindMac struct{}
+type BindMac struct{
+	DriveNumber string `bson:"drivenumber"`
+	UserName    string `bson:"username"`
+	MachineName string `bson:"machinename"`
+}
 
-func (b *BindMac) ReadDriveNumber() (string, error) {
+func (b BindMac) GetDriveNumber() (string, error) {
 	cmd := exec.Command("system_profiler", "SPHardwareDataType")
 	output, err := cmd.Output()
 	if err != nil {
-		log.Println("Error when executing the command: ", err)
-		return "", nil
+		return "", errors.New("Serial number HDD not found" + err.Error())
 	}
 
 	lines := strings.Split(string(output), "\n")
@@ -24,30 +26,33 @@ func (b *BindMac) ReadDriveNumber() (string, error) {
 		if strings.Contains(line, "Serial Number (system)") {
 			parts := strings.Split(line, ":")
 			if len(parts) == 2 {
-				serialNumber := strings.TrimSpace(parts[1])
-
-				return serialNumber, nil
+				return strings.TrimSpace(parts[1]), nil
 			}
 		}
 	}
 
-	return "", errors.New("Serial number HDD not found")
+	return "", errors.New("serial number HDD not found")
 }
 
-func (b *BindMac) ReadUserName() (string, error) {
+func (b BindMac) GetUserName() (string, error) {
 	user, err := user.Current()
 	if err != nil {
 		return "", err
 	}
-
+	if user.Name != "" {
+		return "", errors.New("empty username")
+	}
+	
 	return user.Name, nil
 }
 
-func (b *BindMac) ReadMachineName() (string, error) {
+func (b BindMac) GetMachineName() (string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
 		return "", err
 	}
-
+	if hostname != "" {
+		return "", errors.New("empty hostname")
+	}
 	return hostname, nil
 }

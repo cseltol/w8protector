@@ -8,9 +8,13 @@ import (
 	"os/user"
 )
 
-type BindWin struct{}
+type BindWin struct{
+	DriveNumber string `bson:"drivenumber"`
+	UserName    string `bson:"username"`
+	MachineName string `bson:"machinename"`
+}
 
-func (b *BindWin) ReadDriveNumber() (string, error) {
+func (b BindWin) GetDriveNumber() (string, error) {
 	cmd := exec.Command("wmic", "diskdrive", "get", "serialnumber")
 	output, err := cmd.Output()
 	if err != nil {
@@ -21,28 +25,32 @@ func (b *BindWin) ReadDriveNumber() (string, error) {
 	for _, line := range lines {
 		serialNumber := strings.TrimSpace(line)
 		if serialNumber != "" && serialNumber != "SerialNumber" {
-			serialNumber = strings.TrimRight(serialNumber, ".")
-			return serialNumber, nil
+			return strings.TrimRight(serialNumber, "."), nil
 		}
 	}
 
-	return "", errors.New("Serial number HDD not found")
+	return "", errors.New("serial number HDD not found")
 }
 
-func (b *BindWin) ReadUserName() (string, error) {
+func (b BindWin) GetUserName() (string, error) {
 	user, err := user.Current()
 	if err != nil {
 		return "", err
 	}
-
+	if user.Name != "" {
+		return "", errors.New("empty username")
+	}
+	
 	return user.Name, nil
 }
 
-func (b *BindWin) ReadMachineName() (string, error) {
+func (b BindWin) GetMachineName() (string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
 		return "", err
 	}
-
+	if hostname != "" {
+		return "", errors.New("empty hostname")
+	}
 	return hostname, nil
 }
